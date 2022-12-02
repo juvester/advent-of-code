@@ -1,2 +1,7 @@
-with open("day1/input") as file:
-    print(max([sum([int(cal) for cal in elf.split('\n')]) for elf in file.read().strip().split('\n\n')]))
+def calories(elf):
+    return sum([int(food) for food in elf.split('\n')])
+
+elves = open("day1/input").read().strip().split('\n\n')
+result = max(map(calories, elves))
+
+print(result)
