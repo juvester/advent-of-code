@@ -1,76 +1,20 @@
-class Dir:
-    def __init__(self, name, parent) -> None:
-        self.name = name
-        self.parent = parent
-        self.children = {}
-        self.files = {}
-
-    def size(self) -> int:
-        size = sum(self.files.values())
-        for child in self.children.values():
-            size += child.size()
-        return size
-
-def print_tree(dir: Dir, level: int) -> None:
-    if not dir:
-        return
-    print(f"{' '*2*level}+ {dir.name} (dir)")
-    for child in dir.children.values():
-        print_tree(child, level+1)
-    for file, size in dir.files.items():
-        print(f"{' '*2*(level+1)}- {file} (file, size={size})")
-
-def puzzle1(dir: Dir) -> int:
-    solution = 0
-    for child in dir.children.values():
-        solution += puzzle1(child)
-    size = dir.size()
-    if size <= 100000:
-        solution += size
-    return solution
-
 lines = [l.strip() for l in open("day7/input")]
 
-root = Dir('/', None)
-dir = root
+curr_path = []
+dir_sizes = {}
 
 for line in lines:
-    word = line.split()
+    cmd = line.split()
+    if cmd[0] == '$' and cmd[1] == 'cd':
+        if cmd[2] == '..':
+            curr_path.pop()
+        else:
+            curr_path.append(cmd[2])
+    elif cmd[0].isdigit():
+        for depth in range(len(curr_path)):
+            path = ''.join(curr_path[:depth+1])
+            dir_sizes[path] = dir_sizes.get(path, 0) + int(cmd[0])
 
-    if word[0] == '$':
-        if word[1] == 'cd':
-            if word[2] == '/':
-                dir = root
-            elif word[2] == '..':
-                dir = dir.parent
-            else:
-                dir = dir.children[word[2]]
-        elif word[1] == 'ls':
-            continue
-    elif word[0] == 'dir':
-        if word[1] not in dir.children:
-            dir.children[word[1]] = Dir(word[1], dir)
-    elif word[0].isdigit():
-        if word[1] not in dir.files:
-            dir.files[word[1]] = int(word[0])
-
-#print_tree(root, 0)
-#print(puzzle1(root))
-
-# puzzle2
-fs_size = 70000000
-update_size = 30000000
-unused_space = fs_size - root.size()
-need_to_free = update_size - unused_space
-
-def all_dirs(dir: Dir) -> list:
-    dirs = []
-    for child in dir.children.values():
-        dirs += all_dirs(child)
-    return dirs + [dir]
-
-for dir in sorted(all_dirs(root), key=lambda dir: dir.size()):
-    size = dir.size()
-    if size >= need_to_free:
-        print(size)
-        break
+req_space = 30000000 - (70000000 - dir_sizes['/'])
+result = min([size for size in dir_sizes.values() if size >= req_space])
+print(result)
