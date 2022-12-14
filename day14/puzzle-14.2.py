@@ -8,9 +8,10 @@ def draw_rocks(grid, start, end):
 def pour_sand(grid, source):
     x, y = source
 
+    if grid[y][x] == 'o' :
+        return False
+
     while True:
-        if y+1 >= len(grid):
-            return False
         if grid[y+1][x] == '.':
             y += 1
             continue
@@ -32,6 +33,7 @@ N = 1000
 source = (500, 0)
 grid = [['.'] * N for _ in range(N)]
 lines = [line.strip() for line in open("day14/input")]
+max_y = 0
 
 for line in lines:
     points = line.split(' -> ')
@@ -40,10 +42,12 @@ for line in lines:
         x, y = point.split(',')
         x, y = int(x), int(y)
         path.append((x, y))
+        max_y = max(max_y, y)
     for i in range(1, len(path)):
         draw_rocks(grid, path[i-1], path[i])
 
 grid[source[1]][source[0]] = '+'
+draw_rocks(grid, (0, max_y+2), (N-1, max_y+2))
 
 sand_poured = 0
 while pour_sand(grid, source):
