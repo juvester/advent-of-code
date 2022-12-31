@@ -11,7 +11,7 @@ def next_square(board, y, x, dy, dx):
     elif x + dx < 0:
         return next_square(board, y, len(board[y]), dy, dx)
     elif x + dx >= len(board[0]):
-        return next_square(board, y, -1, dy, dx) 
+        return next_square(board, y, -1, dy, dx)
     elif board[y + dy][x + dx] == ' ':
         return next_square(board, y+dy, x+dx, dy, dx)
     else:
@@ -45,12 +45,12 @@ for turn, steps in path:
 
         if board[next_y][next_x] == '#':
             break
-        
+
         y = next_y
         x = next_x
 
         steps -= 1
-    
+
 y += 1
 x += 1
 
