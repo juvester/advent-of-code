@@ -16,7 +16,7 @@ def next_square(board, y, x, dy, dx, d):
             return next_square(board, h, x - 100, -1, 0, 3)
         else:
             assert False
-    
+
     elif y + dy >= h:
         if x < 50:
             return next_square(board, -1, 100 + x, 1, 0, 1)
@@ -26,7 +26,7 @@ def next_square(board, y, x, dy, dx, d):
             return next_square(board, 50 + (x - 100), 100, 0, -1, 2)
         else:
             assert False
-    
+
     elif x + dx < 0:
         if y < 50:
             return next_square(board, 149 - y, -1, 0, 1, 0)
@@ -85,7 +85,7 @@ for turn, steps in path:
 
         if board[next_y][next_x] == '#':
             break
-        
+
         y = next_y
         x = next_x
         d = next_d
