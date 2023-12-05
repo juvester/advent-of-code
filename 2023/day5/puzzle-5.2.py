@@ -1,11 +1,11 @@
 with open("2023/day5/input") as file:
     sections = file.read().split('\n\n')
 
-seed_ranges = set()
+seeds = set()
 
 seed_data = [int(x) for x in sections[0].split(': ')[1].split()]
 for i in range(0, len(seed_data), 2):
-    seed_ranges.add((seed_data[i], seed_data[i] + seed_data[i+1] - 1))
+    seeds.add((seed_data[i], seed_data[i] + seed_data[i+1] - 1))
 
 for section in sections[1:]:
     map_rules = []
@@ -16,22 +16,24 @@ for section in sections[1:]:
 
     mapped_seeds = set()
 
-    while seed_ranges:
-        seed_range = seed_ranges.pop()
-        for map_rule in map_rules:
-            if map_rule[1] <= seed_range[0] <= map_rule[2]:
-                mapped_seed_start = map_rule[0] + (seed_range[0]-map_rule[1])
-                if seed_range[1] <= map_rule[2]:
-                    mapped_seed_end = map_rule[0] + (seed_range[1]-map_rule[1])
-                else:
-                    mapped_seed_end = map_rule[0] + (map_rule[2]-map_rule[1])
-                    leftover_start = map_rule[2]+1
-                    leftover_end = seed_range[1]
-                    seed_ranges.add((leftover_start, leftover_end))
-                mapped_seeds.add((mapped_seed_start, mapped_seed_end))
-                break
+    while seeds:
+        seed_start, seed_end = seeds.pop()
+        for map_destination, map_start, map_end in map_rules:
+            if not map_start <= seed_start <= map_end:
+                continue
+            mapped_seed_start = map_destination + (seed_start - map_start)
+            if seed_end <= map_end:
+                mapped_seed_end = map_destination + (seed_end - map_start)
+            else:
+                mapped_seed_end = map_destination + (map_end - map_start)
+                leftover_start = map_end + 1
+                leftover_end = seed_end
+                seeds.add((leftover_start, leftover_end))
+            mapped_seeds.add((mapped_seed_start, mapped_seed_end))
+            break
         else:
-            mapped_seeds.add(seed_range)
-    seed_ranges = mapped_seeds
+            mapped_seeds.add((seed_start, seed_end))
 
-print(min(seed_ranges)[0])
+    seeds = mapped_seeds
+
+print(min(seeds)[0])
